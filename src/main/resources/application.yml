@@ -1,0 +1,42 @@
+server:
+  port: ${SERVER_PORT}
+  error:
+    include-stacktrace: ${STACKTRACE}
+
+spring:
+  jpa:
+    generate-ddl: true
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: false
+    hibernate:
+      ddl-auto: ${HIBERNATE_DDL_AUTO}
+  datasource:
+    url: jdbc:${DATABASE_URL}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
+    initialization-mode: ${DATABASE_INIT}
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+    template:
+      todo:
+        exchange: ${RABBITMQ_TODO_EXCHANGE}
+        queue: ${RABBITMQ_TODO_QUEUE}
+        routing-key: ${RABBITMQ_TODO_ROUTING_KEY}
+  mail:
+    protocol: ${MAILER_PROTOCOL}
+    host: ${MAILER_HOST}
+    port: ${MAILER_PORT}
+    username: ${MAILER_USERNAME}
+    password: ${MAILER_PASSWORD}
+    properties.mail.smtp:
+      auth: ${MAILER_AUTH}
+      starttls.enable: true
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}

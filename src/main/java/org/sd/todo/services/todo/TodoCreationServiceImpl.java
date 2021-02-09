@@ -1,11 +1,10 @@
 package org.sd.todo.services.todo;
 
 import org.sd.todo.dto.TodoDto;
-import org.sd.todo.dto.payload.todo.request.TodoRequestDto;
-import org.sd.todo.entity.List;
+import org.sd.todo.entity.TodosRecord;
 import org.sd.todo.entity.Todo;
 import org.sd.todo.entity.User;
-import org.sd.todo.repository.ListRepository;
+import org.sd.todo.repository.TodosRecordRepository;
 import org.sd.todo.repository.TodoRepository;
 import org.sd.todo.services.factory.TodoFactory;
 import org.sd.todo.services.user.UserPrincipal;
@@ -20,13 +19,13 @@ import org.springframework.stereotype.Service;
 public class TodoCreationServiceImpl implements TodoCreationService {
 
     private final TodoFactory todoFactory;
-    private final ListRepository listRepository;
+    private final TodosRecordRepository todosRecordRepository;
     private final TodoRepository todoRepository;
 
     @Autowired
-    public TodoCreationServiceImpl(TodoFactory todoFactory, ListRepository listRepository, TodoRepository todoRepository) {
+    public TodoCreationServiceImpl(TodoFactory todoFactory, TodosRecordRepository todosRecordRepository, TodoRepository todoRepository) {
         this.todoFactory = todoFactory;
-        this.listRepository = listRepository;
+        this.todosRecordRepository = todosRecordRepository;
         this.todoRepository = todoRepository;
     }
 
@@ -36,7 +35,7 @@ public class TodoCreationServiceImpl implements TodoCreationService {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         User owner = userPrincipal.getUser();
 
-        List list = listRepository.findOneByDueDateAndOwnerOrCreate(todoDto.getDueDate(), owner);
-        return todoRepository.save(todoFactory.create(todoDto, list));
+        TodosRecord todosRecord = todosRecordRepository.findOneByDueDateAndOwnerOrCreate(todoDto.getDueDate(), owner);
+        return todoRepository.save(todoFactory.create(todoDto, todosRecord));
     }
 }

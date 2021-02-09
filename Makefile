@@ -1,6 +1,9 @@
+include .env
 DOCKER_COMPOSE = docker-compose
 RUN_APP = $(DOCKER_COMPOSE) run --no-deps app
 EXECUTE_APP ?= $(DOCKER_COMPOSE) exec app
+EXECUTE_DB ?= $(DOCKER_COMPOSE) exec database
+EXECUTE_PSQL ?= $(EXECUTE_DB) psql -U $(DATABASE_USER)
 RUN_MVN = $(EXECUTE_APP) ./mvnw
 
 all: setup mvn-run
@@ -34,7 +37,7 @@ logs:
 	$(DOCKER_COMPOSE) logs -f
 .PHONY: logs
 
-up: mvn-debug
+up:
 	$(DOCKER_COMPOSE) up --remove-orphans -d
 .PHONY: up
 
@@ -65,5 +68,14 @@ mvn-debug:
 # Tests
 #
 test:
-	$(RUN_MVN) test
+	$(RUN_MVN) test -Dspring.profiles.active=test
 .PHONY: test
+
+test-x:
+	$(RUN_MVN) test -Dspring.profiles.active=test -X
+.PHONY: test-x
+
+#test-init-db:
+#	$(EXECUTE_PSQL) -tc "SELECT 1 FROM pg_database WHERE datname = 'test'" | grep -q 1 || \
+#	$(EXECUTE_PSQL) -c "CREATE DATABASE test"
+#.PHONY: test-init-db

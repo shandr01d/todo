@@ -1,27 +1,39 @@
 package org.sd.todo.dto.payload.todo.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.OptBoolean;
 import org.sd.todo.validator.constraints.CorrectTodoStatusConstraint;
+import org.sd.todo.validator.constraints.DateFormatConstraint;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class TodoRequestDto {
 
-    @NotBlank
-    @Size(min = 5, max = 250)
+    public interface ValidationCreate { }
+
+    public interface ValidationUpdate { }
+
+    @NotBlank(message = "title is required", groups = {ValidationCreate.class})
+    @Size(min = 3, max = 250, message = "should be at least 3 chars and less then 250 chars", groups = {ValidationCreate.class, ValidationUpdate.class})
     private String title;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
+//    @DateFormatConstraint(groups = {ValidationCreate.class, ValidationUpdate.class})
+//    private final String strDueDate;
+
+    @NotNull(groups = {ValidationCreate.class})
     @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date dueDate;
 
-    @CorrectTodoStatusConstraint
+    @NotNull(groups = {ValidationCreate.class})
+    @CorrectTodoStatusConstraint(groups = {ValidationCreate.class, ValidationUpdate.class})
     private String status;
 
-    public TodoRequestDto(String title, Date dueDate, String status) {
+    public TodoRequestDto(String title, Date dueDate, String status) throws ParseException {
         this.title = title;
         this.dueDate = dueDate;
         this.status = status;

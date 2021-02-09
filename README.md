@@ -1,4 +1,4 @@
-# todo-lists
+# todo-todosRecords
 1. To setup run in your terminal
 
     ```bash

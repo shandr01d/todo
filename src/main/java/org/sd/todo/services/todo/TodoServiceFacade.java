@@ -10,4 +10,5 @@ public interface TodoServiceFacade {
     public TodoResponseDto create(TodoRequestDto todoRequestDto);
     public TodoResponseDto get(Long id);
     public TodoResponseDto update(TodoRequestDto todoRequestDto, Long id);
+    public void delete(Long id);
 }

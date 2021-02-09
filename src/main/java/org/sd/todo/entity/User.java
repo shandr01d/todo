@@ -18,7 +18,7 @@ import java.util.Collection;
 public class User{
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank
@@ -37,8 +37,8 @@ public class User{
     private String password;
 
     @JsonManagedReference
-    @OneToMany(targetEntity=List.class, mappedBy="owner", cascade=CascadeType.ALL, fetch = FetchType.LAZY)
-    private Collection<List> lists = new ArrayList<>();
+    @OneToMany(targetEntity= TodosRecord.class, mappedBy="owner", cascade=CascadeType.ALL, fetch = FetchType.LAZY)
+    private Collection<TodosRecord> todosRecords = new ArrayList<>();
 
     @JsonManagedReference
     @ManyToMany(fetch = FetchType.LAZY)
@@ -79,12 +79,12 @@ public class User{
         this.password = password;
     }
 
-    public Collection<List> getLists() {
-        return lists;
+    public Collection<TodosRecord> getTodosRecords() {
+        return todosRecords;
     }
 
-    public void setLists(Collection<List> lists) {
-        this.lists = lists;
+    public void setTodosRecord(Collection<TodosRecord> todosRecords) {
+        this.todosRecords = todosRecords;
     }
 
     public Collection<Role> getRoles() {

@@ -2,6 +2,8 @@ package org.sd.todo.dto.payload.todo.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class TodoResponseDto {
@@ -14,6 +16,13 @@ public class TodoResponseDto {
         this.id = id;
         this.title = title;
         this.dueDate = dueDate;
+        this.status = status;
+    }
+
+    public TodoResponseDto(Long id, String title, String dueDate, String status) throws ParseException {
+        this.id = id;
+        this.title = title;
+        this.dueDate = new SimpleDateFormat("yyyy-MM-dd").parse(dueDate);
         this.status = status;
     }
 

@@ -42,19 +42,15 @@ public class TodoServiceFacadeImpl implements TodoServiceFacade {
 
     @Override
     public List<TodoResponseDto> list(TodoRequestDto todoRequestDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-        User owner = userPrincipal.getUser();
-
         TodoDto todoDto = todoTransformer.transformFromRequestDto(todoRequestDto);
-        List<Todo> todos = todoRepository.findAllByOwnerAndCriteria(owner, todoDto);
+        List<Todo> todos = todoRepository.findAllByOwnerAndCriteria(getOwner(), todoDto);
         List<TodoResponseDto> todoResponseDTOs = new ArrayList<>();
         todos.forEach(todo -> {
             todoResponseDTOs.add(
                     new TodoResponseDto(
                             todo.getId(),
                             todo.getTitle(),
-                            todo.getList().getDueDate(),
+                            todo.getTodosRecord().getDueDate(),
                             todo.getStatus().name()
                     )
             );
@@ -70,8 +66,8 @@ public class TodoServiceFacadeImpl implements TodoServiceFacade {
 
     @Override
     public TodoResponseDto get(Long id) {
-        Todo todo = todoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.valueOf(id)));
+        Todo todo = todoRepository.findTopByIdAndOwner(id, getOwner()).
+                orElseThrow(() -> new EntityNotFoundException("Todo '" + String.valueOf(id) + "' not found!"));
         return todoTransformer.transformToResponseDto(todo);
     }
 
@@ -79,5 +75,17 @@ public class TodoServiceFacadeImpl implements TodoServiceFacade {
     public TodoResponseDto update(TodoRequestDto todoRequestDto, Long id) {
         Todo todo = todoUpdateService.update(todoRequestDto, id);
         return todoTransformer.transformToResponseDto(todo);
+    }
+
+    public void delete(Long id) {
+        todoRepository.findTopByIdAndOwner(id, getOwner()).
+                orElseThrow(() -> new EntityNotFoundException("Todo '" + String.valueOf(id) + "' not found!"));
+        todoRepository.deleteById(id);
+    }
+
+    private User getOwner() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        return userPrincipal.getUser();
     }
 }

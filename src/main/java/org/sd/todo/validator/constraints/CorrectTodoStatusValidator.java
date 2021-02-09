@@ -12,8 +12,12 @@ public class CorrectTodoStatusValidator implements ConstraintValidator<CorrectTo
 
     @Override
     public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
+        if(s == null) {
+            return true;
+        }
+
         try {
-            Todo.Type.valueOf(s);
+            Todo.Status.valueOf(s);
         } catch (IllegalArgumentException exception){
             return false;
         }

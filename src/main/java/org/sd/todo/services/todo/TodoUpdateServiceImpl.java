@@ -2,10 +2,10 @@ package org.sd.todo.services.todo;
 
 import org.sd.todo.dto.TodoDto;
 import org.sd.todo.dto.payload.todo.request.TodoRequestDto;
-import org.sd.todo.entity.List;
+import org.sd.todo.entity.TodosRecord;
 import org.sd.todo.entity.Todo;
 import org.sd.todo.entity.User;
-import org.sd.todo.repository.ListRepository;
+import org.sd.todo.repository.TodosRecordRepository;
 import org.sd.todo.repository.TodoRepository;
 import org.sd.todo.services.user.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +22,12 @@ import java.util.function.Consumer;
 public class TodoUpdateServiceImpl implements TodoUpdateService {
 
     private final TodoRepository todoRepository;
-    private final ListRepository listRepository;
+    private final TodosRecordRepository todosRecordRepository;
 
     @Autowired
-    public TodoUpdateServiceImpl(TodoRepository todoRepository, ListRepository listRepository) {
+    public TodoUpdateServiceImpl(TodoRepository todoRepository, TodosRecordRepository todosRecordRepository) {
         this.todoRepository = todoRepository;
-        this.listRepository = listRepository;
+        this.todosRecordRepository = todosRecordRepository;
     }
 
     @Override
@@ -37,12 +37,12 @@ public class TodoUpdateServiceImpl implements TodoUpdateService {
         User owner = userPrincipal.getUser();
 
         if(todoDto.getDueDate() != null){
-            List list = listRepository.findOneByDueDateAndOwnerOrCreate(todoDto.getDueDate(), owner);
-            todo.setList(list);
+            TodosRecord todosRecord = todosRecordRepository.findOneByDueDateAndOwnerOrCreate(todoDto.getDueDate(), owner);
+            todo.setTodosRecord(todosRecord);
         }
 
         todo.setTitle(todoDto.getTitle());
-        todo.setStatus(Todo.Type.valueOf(todoDto.getStatus()));
+        todo.setStatus(Todo.Status.valueOf(todoDto.getStatus()));
 
         return todoRepository.save(todo);
     }
@@ -53,7 +53,7 @@ public class TodoUpdateServiceImpl implements TodoUpdateService {
                 .orElseThrow(() -> new EntityNotFoundException(String.valueOf(id)));
 
         TodoDto todoDto = new TodoDto();
-        setIfNotNull(todoDto::setDueDate, todoRequestDto.getDueDate(), todo.getList().getDueDate());
+        setIfNotNull(todoDto::setDueDate, todoRequestDto.getDueDate(), todo.getTodosRecord().getDueDate());
         setIfNotNull(todoDto::setTitle, todoRequestDto.getTitle(), todo.getTitle());
         setIfNotNull(todoDto::setStatus, todoRequestDto.getStatus(), todo.getStatus().toString());
 

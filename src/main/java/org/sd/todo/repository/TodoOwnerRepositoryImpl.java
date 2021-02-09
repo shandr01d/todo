@@ -25,12 +25,12 @@ public class TodoOwnerRepositoryImpl implements TodoOwnerRepository {
         CriteriaQuery<Todo> cq = cb.createQuery(Todo.class);
 
         Root<Todo> todo = cq.from(Todo.class);
-        Predicate ownerPredicate = cb.equal(todo.get("list").get("owner"), owner.getId());
+        Predicate ownerPredicate = cb.equal(todo.get("todosRecord").get("owner"), owner.getId());
         List<Predicate> predicates = new ArrayList<>();
         predicates.add(ownerPredicate);
 
         if(todoDto.getDueDate() != null){
-            Predicate dueDatePredicate = cb.equal(todo.get("list").get("dueDate"), todoDto.getDueDate());
+            Predicate dueDatePredicate = cb.equal(todo.get("todosRecord").get("dueDate"), todoDto.getDueDate());
             predicates.add(dueDatePredicate);
         }
         if(todoDto.getTitle() != null){
@@ -38,7 +38,7 @@ public class TodoOwnerRepositoryImpl implements TodoOwnerRepository {
             predicates.add(titlePredicate);
         }
         if(todoDto.getStatus() != null){
-            Predicate statusPredicate = cb.like(todo.get("status"), todoDto.getStatus());
+            Predicate statusPredicate = cb.equal(todo.get("status"), Todo.Status.valueOf(todoDto.getStatus()));
             predicates.add(statusPredicate);
         }
 

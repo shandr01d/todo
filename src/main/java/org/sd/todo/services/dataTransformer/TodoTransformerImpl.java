@@ -20,7 +20,7 @@ public class TodoTransformerImpl implements TodoTransformer {
         return new TodoResponseDto(
                 todo.getId(),
                 todo.getTitle(),
-                todo.getList().getDueDate(),
+                todo.getTodosRecord().getDueDate(),
                 todo.getStatus().toString()
         );
     }

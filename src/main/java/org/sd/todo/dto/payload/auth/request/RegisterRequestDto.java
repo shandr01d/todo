@@ -1,24 +1,24 @@
 package org.sd.todo.dto.payload.auth.request;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.util.Collection;
 import java.util.Set;
 
 public class RegisterRequestDto {
-    @NotBlank
+    @NotNull
     @Size(min = 3, max = 20)
     private String username;
  
-    @NotBlank
+    @NotNull
     @Size(max = 50)
     @Email
     private String email;
-    
+
+    @NotNull
+    @NotEmpty
     private Set<String> roles;
     
-    @NotBlank
+    @NotNull
     @Size(min = 6, max = 40)
     private String password;
   

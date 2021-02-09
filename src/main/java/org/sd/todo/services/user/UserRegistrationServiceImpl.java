@@ -27,27 +27,32 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
     }
 
     @Override
-    public RegisterResponseDto registerUser(RegisterRequestDto registerRequestDto) throws UserCreationException, Exception {
-        UserDto userDto = new UserDto();
-        userDto.setUsername(registerRequestDto.getUsername());
-        userDto.setEmail(registerRequestDto.getEmail());
-        userDto.setPlainPassword(registerRequestDto.getPassword());
+    public RegisterResponseDto registerUser(RegisterRequestDto registerRequestDto) throws UserCreationException {
+        try {
+            UserDto userDto = new UserDto();
+            userDto.setUsername(registerRequestDto.getUsername());
+            userDto.setEmail(registerRequestDto.getEmail());
+            userDto.setPlainPassword(registerRequestDto.getPassword());
 
-        Collection<String> roleString = registerRequestDto.getRoles();
+            Collection<String> roleString = registerRequestDto.getRoles();
 
-        roleString.forEach(
-            role -> {
-                Role foundRole = roleRepository.findByName(Role.Type.valueOf(role))
-                        .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                userDto.addRole(foundRole);
-            }
-        );
+            roleString.forEach(
+                role -> {
+                    Role foundRole = roleRepository.findByName(Role.Type.valueOf(role))
+                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    userDto.addRole(foundRole);
+                }
+            );
 
-        User user = userCreationService.create(userDto);
-        return new RegisterResponseDto(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail()
-        );
+            User user = userCreationService.create(userDto);
+            return new RegisterResponseDto(
+                    user.getId(),
+                    user.getUsername(),
+                    user.getEmail()
+            );
+
+        } catch (RuntimeException exception){
+            throw new UserCreationException(exception.getMessage());
+        }
     }
 }

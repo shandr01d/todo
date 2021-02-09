@@ -1,5 +1,6 @@
 package org.sd.todo.dto.payload.auth.response;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class LoginResponseDto {
@@ -9,6 +10,11 @@ public class LoginResponseDto {
 	private String username;
 	private String email;
 	private final List<String> roles;
+
+	public LoginResponseDto() {
+		super();
+		roles = new ArrayList<>();
+	}
 
 	public LoginResponseDto(String accessToken, Long id, String username, String email, List<String> roles) {
 		this.token = accessToken;

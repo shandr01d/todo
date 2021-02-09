@@ -1,38 +1,37 @@
 package org.sd.todo.controller;
 
 import org.sd.todo.dto.payload.todo.request.TodoRequestDto;
-import org.sd.todo.repository.TodoRepository;
 import org.sd.todo.services.todo.TodoServiceFacade;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import javax.validation.Valid;
 
+
+@Validated
 @RestController
 @RequestMapping(path="/api/todos")
 public class TodoController {
 
-    private final TodoRepository todoRepository;
     private final TodoServiceFacade todoServiceFacade;
 
     @Autowired
-    public TodoController(
-            TodoRepository todoRepository,
-            TodoServiceFacade todoServiceFacade
-    ) {
-        this.todoRepository = todoRepository;
+    public TodoController(TodoServiceFacade todoServiceFacade) {
         this.todoServiceFacade = todoServiceFacade;
     }
 
-    @GetMapping(path = "")
-    public @ResponseBody ResponseEntity<?> list(@Valid TodoRequestDto todoRequestDto) {
+    @GetMapping
+    public @ResponseBody ResponseEntity<?> list(TodoRequestDto todoRequestDto) {
         return ResponseEntity.ok(
                 todoServiceFacade.list(todoRequestDto)
         );
     }
 
-    @PostMapping(path = "", consumes = "application/json", produces = "application/json")
-    public @ResponseBody ResponseEntity<?> create(@Valid @RequestBody TodoRequestDto todoRequestDto) {
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody ResponseEntity<?> create(
+            @RequestBody @Validated(TodoRequestDto.ValidationCreate.class) TodoRequestDto todoRequestDto
+    ) throws Exception {
         return ResponseEntity.ok(
                 todoServiceFacade.create(todoRequestDto)
         );
@@ -45,8 +44,14 @@ public class TodoController {
         );
     }
 
-    @PutMapping(path = "/{id}", consumes = "application/json", produces = "application/json")
-    public @ResponseBody ResponseEntity<?> update(@Valid @RequestBody TodoRequestDto todoRequestDto, @PathVariable Long id) {
+    @PutMapping(
+            path = "/{id}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    ) public @ResponseBody ResponseEntity<?> update (
+            @RequestBody @Validated(TodoRequestDto.ValidationUpdate.class) TodoRequestDto todoRequestDto,
+            @PathVariable Long id
+    ) {
         return ResponseEntity.ok(
                 todoServiceFacade.update(todoRequestDto, id)
         );
@@ -54,7 +59,7 @@ public class TodoController {
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
-        todoRepository.deleteById(id);
+        todoServiceFacade.delete(id);
     }
 
 }

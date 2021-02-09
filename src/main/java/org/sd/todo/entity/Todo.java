@@ -1,6 +1,8 @@
 package org.sd.todo.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -9,20 +11,24 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "todos")
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id", scope = Todo.class)
 public class Todo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "title", nullable = false, length = 255)
     private String title;
 
-    private Type status;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 10)
+    private Status status;
 
     @JsonBackReference
     @ManyToOne()
-    @JoinColumn(name="list_id")
-    private List list;
+    @JoinColumn(name="todos_record_id")
+    private TodosRecord todosRecord;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -30,7 +36,7 @@ public class Todo {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    public static enum Type {
+    public static enum Status {
         CREATED, DONE, FAILED, CANCELLED, DELETED
     }
 
@@ -50,20 +56,20 @@ public class Todo {
         this.title = title;
     }
 
-    public Type getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(Type status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
-    public List getList() {
-        return list;
+    public TodosRecord getTodosRecord() {
+        return todosRecord;
     }
 
-    public void setList(List list) {
-        this.list = list;
+    public void setTodosRecord(TodosRecord todosRecord) {
+        this.todosRecord = todosRecord;
     }
 
     public LocalDateTime getCreatedAt() {
